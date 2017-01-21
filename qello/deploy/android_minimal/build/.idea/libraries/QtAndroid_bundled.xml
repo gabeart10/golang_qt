@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="QtAndroid-bundled">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/QtAndroid-bundled.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
