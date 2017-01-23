@@ -41,8 +41,6 @@ func main() {
 		gridLayout.SetRowMinimumHeight(i, 40)
 	}
 
-	for i := 0; i < 100; i++ {
-	}
 	window.Show()
 
 	widgets.QApplication_Exec()
