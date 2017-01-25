@@ -7,9 +7,14 @@ import (
 	"os"
 )
 
-func CreateBullet() Bullet struct {
+func CreateBullet() (Bullet *widgets.QGraphicsRectItem) {
 	Bullet = widgets.NewQGraphicsRectItem(nil)
 	Bullet.SetRect2(0, 0, 10, 50)
+	var time = core.NewQTimer(nil)
+	time.ConnectTimeout(func() {
+		Bullet.SetPos2(Bullet.X(), Bullet.Y()-10)
+	})
+	time.Start(50)
 	return
 }
 
@@ -34,6 +39,7 @@ func main() {
 			rect.SetPos2(rect.X(), rect.Y()-10)
 		} else if keypress.Key() == int(core.Qt__Key_Space) {
 			var bullet = CreateBullet()
+			bullet.SetPos2(rect.X(), rect.Y())
 			scene.AddItem(bullet)
 		}
 	})
@@ -41,6 +47,8 @@ func main() {
 	scene.AddItem(rect)
 
 	var view = widgets.NewQGraphicsView2(scene, nil)
+	view.SetHorizontalScrollBarPolicy(core.Qt__ScrollBarAlwaysOff)
+	view.SetVerticalScrollBarPolicy(core.Qt__ScrollBarAlwaysOff)
 
 	view.Show()
 
