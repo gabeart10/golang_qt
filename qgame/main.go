@@ -7,16 +7,15 @@ import (
 	"os"
 )
 
-var scene = widgets.NewQGraphicsScene(nil)
-
-func CreateBullet() (Bullet *widgets.QGraphicsRectItem) {
+func CreateBullet(Scene *widgets.QGraphicsScene) (Bullet *widgets.QGraphicsRectItem) {
 	Bullet = widgets.NewQGraphicsRectItem(nil)
 	Bullet.SetRect2(0, 0, 10, 50)
 	var time = core.NewQTimer(nil)
 	time.ConnectTimeout(func() {
 		Bullet.SetPos2(Bullet.X(), Bullet.Y()-10)
 		if Bullet.Y() < -50 {
-			scene.RemoveItem(Bullet)
+			Scene.RemoveItem(Bullet)
+			time.Stop()
 		}
 	})
 	time.Start(50)
@@ -25,6 +24,7 @@ func CreateBullet() (Bullet *widgets.QGraphicsRectItem) {
 
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
+	var scene = widgets.NewQGraphicsScene(nil)
 
 	var player = widgets.NewQGraphicsRectItem(nil)
 	player.SetRect2(0, 0, 100, 100)
@@ -37,7 +37,7 @@ func main() {
 		} else if keypress.Key() == int(core.Qt__Key_Right) {
 			player.SetPos2(player.X()+10, player.Y())
 		} else if keypress.Key() == int(core.Qt__Key_Space) {
-			var bullet = CreateBullet()
+			var bullet = CreateBullet(scene)
 			scene.AddItem(bullet)
 			bullet.SetPos2(player.X(), player.Y())
 		}
