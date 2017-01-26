@@ -7,12 +7,17 @@ import (
 	"os"
 )
 
+var scene = widgets.NewQGraphicsScene(nil)
+
 func CreateBullet() (Bullet *widgets.QGraphicsRectItem) {
 	Bullet = widgets.NewQGraphicsRectItem(nil)
 	Bullet.SetRect2(0, 0, 10, 50)
 	var time = core.NewQTimer(nil)
 	time.ConnectTimeout(func() {
 		Bullet.SetPos2(Bullet.X(), Bullet.Y()-10)
+		if Bullet.Y() < -50 {
+			scene.RemoveItem(Bullet)
+		}
 	})
 	time.Start(50)
 	return
@@ -21,36 +26,34 @@ func CreateBullet() (Bullet *widgets.QGraphicsRectItem) {
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
 
-	var scene = widgets.NewQGraphicsScene(nil)
+	var player = widgets.NewQGraphicsRectItem(nil)
+	player.SetRect2(0, 0, 100, 100)
+	player.SetFlag(widgets.QGraphicsItem__ItemIsFocusable, true)
+	player.SetFocus(core.Qt__ActiveWindowFocusReason)
 
-	var rect = widgets.NewQGraphicsRectItem(nil)
-	rect.SetRect2(0, 0, 100, 100)
-	rect.SetFlag(widgets.QGraphicsItem__ItemIsFocusable, true)
-	rect.SetFocus(core.Qt__ActiveWindowFocusReason)
-
-	rect.ConnectKeyPressEvent(func(keypress *gui.QKeyEvent) {
+	player.ConnectKeyPressEvent(func(keypress *gui.QKeyEvent) {
 		if keypress.Key() == int(core.Qt__Key_Left) {
-			rect.SetPos2(rect.X()-10, rect.Y())
+			player.SetPos2(player.X()-10, player.Y())
 		} else if keypress.Key() == int(core.Qt__Key_Right) {
-			rect.SetPos2(rect.X()+10, rect.Y())
-		} else if keypress.Key() == int(core.Qt__Key_Down) {
-			rect.SetPos2(rect.X(), rect.Y()+10)
-		} else if keypress.Key() == int(core.Qt__Key_Up) {
-			rect.SetPos2(rect.X(), rect.Y()-10)
+			player.SetPos2(player.X()+10, player.Y())
 		} else if keypress.Key() == int(core.Qt__Key_Space) {
 			var bullet = CreateBullet()
-			bullet.SetPos2(rect.X(), rect.Y())
 			scene.AddItem(bullet)
+			bullet.SetPos2(player.X(), player.Y())
 		}
 	})
 
-	scene.AddItem(rect)
+	scene.AddItem(player)
 
 	var view = widgets.NewQGraphicsView2(scene, nil)
 	view.SetHorizontalScrollBarPolicy(core.Qt__ScrollBarAlwaysOff)
 	view.SetVerticalScrollBarPolicy(core.Qt__ScrollBarAlwaysOff)
 
 	view.Show()
+	view.SetFixedSize2(800, 600)
+	scene.SetSceneRect2(0, 0, 800, 600)
+
+	player.SetPos2(float64(view.Width())/2, float64(view.Height())-player.Rect().Height())
 
 	widgets.QApplication_Exec()
 }
